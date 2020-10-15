@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model
 {
-    class HoaDonBanModel
+    public class HoaDonBanModel
     {   
         public string Mahdb { get; set; }
         public string Makh { get; set; }

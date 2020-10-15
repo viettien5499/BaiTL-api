@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model
 {
-    class CTHoaDonNhapModel
+    public class CTHoaDonNhapModel
     {
         public string Macthdn { get; set; }
         public string Mahdn { get; set; }

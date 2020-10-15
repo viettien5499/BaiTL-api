@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model
 {
-    class HoaDonNhapModel
+    public class HoaDonNhapModel
     {
         public string Mahdn { get; set; }
         public DateTime Ngaynhap { get; set; }

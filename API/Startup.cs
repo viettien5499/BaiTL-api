@@ -42,6 +42,8 @@ namespace API
             services.AddTransient<IDatabaseHelper, DatabaseHelper>();
             services.AddTransient<ILoaiSanPhamDAL, LoaiSanPhamDAL>();
             services.AddTransient<ILoaiSanPhamBLL, LoaiSanPhamBLL>();
+            services.AddTransient<ISanPhamDAL, SanPhamDAL>();
+            services.AddTransient<ISanPhamBLL, SanPhamBLL>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
