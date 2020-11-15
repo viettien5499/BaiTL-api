@@ -21,7 +21,11 @@ namespace BLL
             Secret = configuration["AppSettings:Secret"];
             _res = res;
         }
-        
+
+        public List<UserModel> GetDataAll()
+        {
+            return _res.GetDataAll();
+        }
         public UserModel Authenticate(string username, string password)
         {
             var user = _res.GetUser(username, password);

@@ -12,6 +12,7 @@ namespace BLL
         bool Create(UserModel model);
         bool Update(UserModel model);
         bool Delete(string id);
+        List<UserModel> GetDataAll();
         List<UserModel> Search(int pageIndex, int pageSize, out long total, string hoten, string taikhoan);
     }
 }

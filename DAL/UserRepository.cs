@@ -16,6 +16,21 @@ namespace DAL
             _dbHelper = dbHelper;
         }
 
+        public List<UserModel> GetDataAll()
+        {
+            string msgError = "";
+            try
+            {
+                var dt = _dbHelper.ExecuteSProcedureReturnDataTable(out msgError, "sp_user_all");
+                if (!string.IsNullOrEmpty(msgError))
+                    throw new Exception(msgError);
+                return dt.ConvertTo<UserModel>().ToList();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public bool Create(UserModel model)
         {
             string msgError = "";

@@ -12,7 +12,8 @@ namespace DAL
         bool Create(UserModel model);
         bool Delete(string id);
         bool Update(UserModel model);
-        
+
+        List<UserModel> GetDataAll();
         List<UserModel> Search(int pageIndex, int pageSize, out long total, string hoten, string taikhoan);
     }
 }

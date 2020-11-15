@@ -13,7 +13,7 @@ using Model;
 
 namespace API.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
@@ -79,8 +79,14 @@ namespace API.Controllers
                 return ex.Message;
             }
         }
-        
-        
+
+        [Route("get-all")]
+        [HttpGet]
+        public IEnumerable<UserModel> GetDataAll()
+        {
+            return _userBusiness.GetDataAll();
+        }
+
         [Route("delete-user")]
         [HttpPost]
         public IActionResult DeleteUser([FromBody] Dictionary<string, object> formData)
