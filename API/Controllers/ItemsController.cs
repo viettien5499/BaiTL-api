@@ -1,28 +1,28 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using BLL.Interfaces;
+using System.Text;
+using BLL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Model;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SanPhamController : ControllerBase
+   
+    public class ItemsController : ControllerBase
     {
         private string _path;
-        private ISanPhamBusiness _itemBusiness;
-        public SanPhamController(ISanPhamBusiness itemBusiness, IConfiguration configuration)
+        private IItemBusiness _itemBusiness;
+        public ItemsController(IItemBusiness itemBusiness)
         {
             _itemBusiness = itemBusiness;
-            _path = configuration["AppSettings:PATH"];
-
         }
         public string SaveFileFromBase64String(string RelativePathFileName, string dataFromBase64String)
         {
@@ -56,30 +56,30 @@ namespace API.Controllers
         [HttpPost]
         public IActionResult DeleteItem([FromBody] Dictionary<string, object> formData)
         {
-            string Masp = "";
-            
-            if (formData.Keys.Contains("Masp") && !string.IsNullOrEmpty(Convert.ToString(formData["Masp"]))) { Masp = Convert.ToString(formData["Masp"]); }
-            _itemBusiness.Delete(Masp);
+            string item_id = "";
+
+            if (formData.Keys.Contains("item_id") && !string.IsNullOrEmpty(Convert.ToString(formData["item_id"]))) { item_id = Convert.ToString(formData["item_id"]); }
+            _itemBusiness.Delete(item_id);
             return Ok();
         }
 
 
         [Route("create-item")]
         [HttpPost]
-        public SanPhamModel CreateItem([FromBody] SanPhamModel model)
+        public ItemModel CreateItem([FromBody] ItemModel model)
         {
-            if (model.Hinhanh != null)
+            if (model.item_image != null)
             {
-                var arrData = model.Hinhanh.Split(';');
+                var arrData = model.item_image.Split(';');
                 if (arrData.Length == 3)
                 {
                     var savePath = $@"assets/images/{arrData[0]}";
-                    model.Hinhanh = $"{savePath}";
+                    model.item_image = $"{savePath}";
                     SaveFileFromBase64String(savePath, arrData[2]);
                 }
             }
 
-            model.Masp = Guid.NewGuid().ToString();
+            model.item_id = Guid.NewGuid().ToString();
 
             _itemBusiness.Create(model);
 
@@ -89,15 +89,15 @@ namespace API.Controllers
 
         [Route("update-item")]
         [HttpPost]
-        public SanPhamModel UpdateItem([FromBody] SanPhamModel model)
+        public ItemModel UpdateItem([FromBody] ItemModel model)
         {
-            if (model.Hinhanh != null)
+            if (model.item_image != null)
             {
-                var arrData = model.Hinhanh.Split(';');
+                var arrData = model.item_image.Split(';');
                 if (arrData.Length == 3)
                 {
                     var savePath = $@"assets/images/{arrData[0]}";
-                    model.Hinhanh = $"{savePath}";
+                    model.item_image = $"{savePath}";
                     SaveFileFromBase64String(savePath, arrData[2]);
                 }
             }
@@ -108,16 +108,16 @@ namespace API.Controllers
 
         [Route("get-all")]
         [HttpGet]
-        public IEnumerable<SanPhamModel> GetDataAll()
+        public IEnumerable<ItemModel> GetDataAll()
         {
             return _itemBusiness.GetDataAll();
         }
 
         [Route("get-same-item/{item_group_id}")]
         [HttpGet]
-        public IEnumerable<SanPhamModel> GetDataSameItem(string Maloai)
+        public IEnumerable<ItemModel> GetDataSameItem(string item_group_id)
         {
-            return _itemBusiness.GetDataSameItem(Maloai);
+            return _itemBusiness.GetDataSameItem(item_group_id);
         }
 
         //[Route("get-all")]
@@ -130,7 +130,7 @@ namespace API.Controllers
 
         [Route("get-by-id/{id}")]
         [HttpGet]
-        public SanPhamModel GetDatabyID(string id)
+        public ItemModel GetDatabyID(string id)
         {
             return _itemBusiness.GetDatabyID(id);
         }
@@ -145,10 +145,10 @@ namespace API.Controllers
             {
                 var page = int.Parse(formData["page"].ToString());
                 var pageSize = int.Parse(formData["pageSize"].ToString());
-                string Tensp = "";
-                if (formData.Keys.Contains("Tensp") && !string.IsNullOrEmpty(Convert.ToString(formData["Tensp"]))) { Tensp = Convert.ToString(formData["Tensp"]); }
+                string item_name = "";
+                if (formData.Keys.Contains("item_name") && !string.IsNullOrEmpty(Convert.ToString(formData["item_name"]))) { item_name = Convert.ToString(formData["item_name"]); }
                 long total = 0;
-                var data = _itemBusiness.Search1(page, pageSize, out total, Tensp);
+                var data = _itemBusiness.Search1(page, pageSize, out total, item_name);
                 response.TotalItems = total;
                 response.Data = data;
                 response.Page = page;
@@ -170,13 +170,13 @@ namespace API.Controllers
             {
                 var page = int.Parse(formData["page"].ToString());
                 var pageSize = int.Parse(formData["pageSize"].ToString());
-                string Maloai = "";
-                if (formData.Keys.Contains("Maloai") && !string.IsNullOrEmpty(Convert.ToString(formData["Maloai"]))) { Maloai = Convert.ToString(formData["Maloai"]); }
+                string item_group_id = "";
+                if (formData.Keys.Contains("item_group_id") && !string.IsNullOrEmpty(Convert.ToString(formData["item_group_id"]))) { item_group_id = Convert.ToString(formData["item_group_id"]); }
                 long total = 0;
-                var data = _itemBusiness.Search(page, pageSize, out total, Maloai);
+                var data = _itemBusiness.Search(page, pageSize, out total, item_group_id);
                 response.TotalItems = total;
                 response.Data = data;
-                response.Page = page;
+                response.Page = page;   
                 response.PageSize = pageSize;
             }
             catch (Exception ex)
@@ -185,17 +185,6 @@ namespace API.Controllers
             }
             return response;
         }
-        [Route("get-spkm")]
-        [HttpGet]
-        public IEnumerable<SanPhamModel> GetSpKm()
-        {
-            return _itemBusiness.GetSpKm();
-        }
-        [Route("get-sptot")]
-        [HttpGet]
-        public IEnumerable<SanPhamModel> GetSpTot()
-        {
-            return _itemBusiness.GetSpTot();
-        }
+
     }
 }
